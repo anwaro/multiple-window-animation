@@ -1,2 +1,4 @@
 build
-src/header.js
+.idea
+node_modules
+yarn-error.log
