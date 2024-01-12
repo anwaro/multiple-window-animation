@@ -1,7 +1,9 @@
 const path = require("path");
 const webpack = require("webpack");
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const isDev = process.argv.some(v => v.includes("development"));
+
 
 module.exports = {
     mode: isDev ? "development" : "production",
@@ -14,7 +16,7 @@ module.exports = {
         filename: "index.js"
     },
     resolve: {
-        extensions: [".ts",  ".js"]
+        extensions: [".ts", ".js"]
     },
     module: {
         rules: [
@@ -27,4 +29,11 @@ module.exports = {
     optimization: {
         minimize: !isDev
     },
+    plugins: [
+        new HtmlWebpackPlugin({
+            template: 'src/index.html',
+            hash: true,
+            inject: 'body'
+        })
+    ]
 };
