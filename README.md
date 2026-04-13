@@ -85,6 +85,41 @@ Requires a browser with:
 
 Works best when windows are on the same screen so particles are visible across the physical display boundary.
 
+### Known compatibility issues
+
+This project relies on `window.screenLeft` / `window.screenTop` to read the real screen position of each window. Some browsers protect against fingerprinting by hiding or randomizing these values, which breaks the cross-window animation.
+
+| Browser | Window position APIs | localStorage sync | Notes |
+|---|---|---|---|
+| **Chrome** | ✅ Real values | ✅ Works | Fully supported |
+| **Edge** | ✅ Real values | ✅ Works | Fully supported (Chromium) |
+| **Opera** | ✅ Real values | ✅ Works | Fully supported (Chromium) |
+| **Firefox** (default) | ✅ Real values | ✅ Works | Fully supported |
+| **Firefox** (`resistFingerprinting`) | ❌ Always returns 0 | ✅ Works | See below |
+| **Safari** (normal) | ✅ Real values | ⚠️ Occasional bugs | See below |
+| **Safari** (private) | ✅ Real values | ❌ Tabs isolated | Each private window is sandboxed |
+| **Brave** (default Shields) | ❌ Randomized 0–8 px | ✅ Works | See below |
+
+---
+
+#### Brave — does not work by default
+
+Brave's fingerprinting protection (**Shields**) actively *farbles* all screen and window position APIs. `window.screenLeft` and `window.screenTop` return a random value between 0 and 8 px, seeded per session and domain — regardless of the actual window position. As a result, all windows appear to be at the same screen coordinates and the animation does not work.
+
+**Fix:** Click the Shields icon in the address bar → *Fingerprinting* → set to **Allow fingerprinting** for this page.
+
+#### Firefox with `privacy.resistFingerprinting`
+
+Not enabled by default. Only affects users who have manually set `privacy.resistFingerprinting = true` in `about:config`, or who use **Tor Browser**. When active, `window.screenLeft` / `screenTop` always return `0`, breaking relative window positioning.
+
+**Fix:** Set `privacy.resistFingerprinting` to `false` in `about:config` for this site.
+
+#### Safari
+
+Safari does not block position APIs. However, there are two caveats:
+- **Private browsing:** each private window has an isolated `localStorage` — cross-tab sync does not work.
+- **Inactivity expiry:** Safari clears `localStorage` after 7 days of inactivity (ITP). Not an issue during active use.
+
 ## License
 
 MIT
